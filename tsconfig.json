@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "pretty": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+		"strict": true,
+		/* strict mode enables the following rules: */
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"strictFunctionTypes": true,
+		"noImplicitThis": true,
+		"strictBindCallApply": true,
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noErrorTruncation": false,
+
+    "baseUrl": "./src",
+    "paths": {
+      "@app/*": ["./app/*"],
+      "@pages/*": ["./pages/*"],
+      "@features/*": ["./entities/*"],
+      "@shared/*": ["./shared/*"],
+    },
+  },
+  "include": ["src", "vite.config.js"],
+  "exclude": ["node_modules", "**/dist"],
+}
