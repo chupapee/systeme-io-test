@@ -39,7 +39,12 @@
       "@pages/*": ["./pages/*"],
       "@features/*": ["./entities/*"],
       "@shared/*": ["./shared/*"],
+      "@assets/*": ["./shared/ui/assets/*"],
     },
+    "types": [
+      "vite/client",
+      "vite-plugin-svgr/client"
+    ],
   },
   "include": ["src", "vite.config.js"],
   "exclude": ["node_modules", "**/dist"],
