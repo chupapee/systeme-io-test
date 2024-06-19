@@ -1,4 +1,4 @@
-export const pricePlans = [
+export const mockPricePlans = [
   {
     id: 13334466,
     description: 'aute fugiat commodo id',
@@ -70,3 +70,5 @@ export const pricePlans = [
     removedAt: '2021-09-09T11:21:13.0Z',
   },
 ];
+
+export type PricePlan = (typeof mockPricePlans)[number];

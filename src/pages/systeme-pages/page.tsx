@@ -1,8 +1,12 @@
-import { Input, Table, useTableFilter } from '@shared/ui';
+import { useDisclosure } from '@shared/hooks';
+import { Input, Modal, Table, useTableFilter } from '@shared/ui';
 
-import { pages } from './data';
+import { usePages } from './api';
+import { Page } from './data';
+import { EditPageForm } from './edit-page';
 
 export const SystemePagesPage = () => {
+  const { pages, loading } = usePages();
   const { filteredData, filterVal, onFilter } = useTableFilter({
     data: pages,
     column: { name: 'title' },
@@ -38,8 +42,18 @@ export const SystemePagesPage = () => {
               return new Date(value).toLocaleDateString();
             },
           },
+          actions: {
+            headerName: 'Actions',
+            renderCell: (page) => (
+              <EditPageModal
+                page={page}
+                renderButton={(open) => <button onClick={open}>Edit</button>}
+              />
+            ),
+          },
         }}
         data={filteredData}
+        loading={loading}
         attributes={{
           tr: {
             className: 'even:bg-blue-100',
@@ -49,3 +63,22 @@ export const SystemePagesPage = () => {
     </>
   );
 };
+
+export function EditPageModal({
+  page,
+  renderButton,
+}: {
+  page: Page;
+  renderButton: (open: () => void) => JSX.Element;
+}) {
+  const [opened, { open, close }] = useDisclosure();
+
+  return (
+    <>
+      {renderButton(open)}
+      <Modal title="Edit Page" opened={opened} close={close}>
+        <EditPageForm page={page} />
+      </Modal>
+    </>
+  );
+}

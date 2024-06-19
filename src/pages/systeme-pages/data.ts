@@ -1,4 +1,4 @@
-export const pages = [
+export const mockPages = [
   {
     id: 23634610,
     title: 'aliquip sit proident veniam tempor',
@@ -70,3 +70,5 @@ export const pages = [
     publishedAt: '1998-12-12T14:02:25.0Z',
   },
 ];
+
+export type Page = (typeof mockPages)[number];

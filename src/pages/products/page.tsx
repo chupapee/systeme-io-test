@@ -1,8 +1,9 @@
-import { Input, Table, TableColumns, useTableFilter } from '@shared/ui';
+import { useDisclosure } from '@shared/hooks';
+import { Input, Modal, Table, TableColumns, useTableFilter } from '@shared/ui';
 
-import { products } from './data';
-
-type Product = (typeof products)[number];
+import { useProducts } from './api';
+import { Product } from './data';
+import { EditProductForm } from './edit-product';
 
 const columns: TableColumns<Product> = {
   id: {
@@ -27,9 +28,20 @@ const columns: TableColumns<Product> = {
     },
     sortable: true,
   },
+  actions: {
+    headerName: 'Actions',
+    renderCell: (product) => (
+      <EditProductModal
+        product={product}
+        renderButton={(open) => <button onClick={open}>Edit</button>}
+      />
+    ),
+  },
 };
 
 export const ProductsPage = () => {
+  const { products, loading } = useProducts();
+
   const { filteredData, filterVal, onFilter } = useTableFilter({
     data: products,
     column: { name: 'name' },
@@ -44,7 +56,26 @@ export const ProductsPage = () => {
         className="mb-4"
         placeholder="filter by name"
       />
-      <Table data={filteredData} columns={columns} />
+      <Table data={filteredData} loading={loading} columns={columns} />
     </>
   );
 };
+
+export function EditProductModal({
+  product,
+  renderButton,
+}: {
+  product: Product;
+  renderButton: (open: () => void) => JSX.Element;
+}) {
+  const [opened, { open, close }] = useDisclosure();
+
+  return (
+    <>
+      {renderButton(open)}
+      <Modal title="Edit Product" opened={opened} close={close}>
+        <EditProductForm product={product} />
+      </Modal>
+    </>
+  );
+}

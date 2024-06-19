@@ -1,4 +1,4 @@
-export const products = [
+export const mockProducts = [
   {
     id: 14381328,
     name: 'id quis voluptate nostrud',
@@ -70,3 +70,5 @@ export const products = [
     createdAt: '2012-09-24T01:42:32.0Z',
   },
 ];
+
+export type Product = (typeof mockProducts)[number];
