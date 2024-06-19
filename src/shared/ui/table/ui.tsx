@@ -1,9 +1,8 @@
 import { PropsWithChildren, useEffect, useState } from 'react';
 
-import { TableSortState, useTableFilter, useTableSorter } from './lib';
+import { TableSortState, useTableSorter } from './lib';
 import {
   TableAttributes,
-  TableColumnOptions,
   TableColumns,
   TableColumnSorter,
   TableData,
@@ -37,7 +36,7 @@ const defaultAttributes: TableAttributes = {
 export const Table = <Data extends Array<TableData>>(
   props: TableProps<Data, TableColumns<Data[number]>>
 ) => {
-  const { attributes = {}, data } = props;
+  const { attributes = {}, data, loading } = props;
   const [localData, setLocalData] = useState(data);
   const sorterOptions = useTableSorter(localData);
 
@@ -46,6 +45,9 @@ export const Table = <Data extends Array<TableData>>(
       setLocalData(data);
     }
   }, [data]);
+
+  if (loading) return 'loading...';
+  if (data.length === 0) return 'Empty';
 
   return (
     <div>
@@ -62,7 +64,7 @@ type TableHeader<Data extends TableData[]> = TableProps<
   TableColumns<Data[number]>
 > & {
   sortState: TableSortState<Data>;
-  sortFx: (column: string, sorter?: TableColumnSorter) => void;
+  sortFx: (column: string, sorter?: TableColumnSorter<Data[number]>) => void;
 };
 
 function TableHeader<Data extends Array<TableData>>({
@@ -74,26 +76,25 @@ function TableHeader<Data extends Array<TableData>>({
   return (
     <thead {...defaultAttributes.thead} {...attributes.thead}>
       <tr {...defaultAttributes.tr} {...attributes.tr}>
-        {Object.entries(columns).map(
-          ([key, opts]: [string, TableColumnOptions]) => (
-            <th key={key} {...defaultAttributes.th} {...attributes.th}>
-              <span>{opts.headerName}</span>
+        {Object.entries(columns).map(([key, opts]) => (
+          <th key={key} {...defaultAttributes.th} {...attributes.th}>
+            <span>{opts?.headerName}</span>
 
-              {opts.sortable && (
-                <button
-                  className="ml-2"
-                  onClick={() => sortFx(key, opts.sorter)}
-                >
-                  {sortState.column !== key
-                    ? '▶️'
-                    : sortState.direction === 'asc'
-                      ? '▲'
-                      : '▼'}
-                </button>
-              )}
-            </th>
-          )
-        )}
+            {/* if column is not action */}
+            {opts && 'sortable' in opts && (
+              <button
+                className="ml-2"
+                onClick={() => sortFx(key, opts.sorter as TableColumnSorter)}
+              >
+                {sortState.column !== key
+                  ? '▶️'
+                  : sortState.direction === 'asc'
+                    ? '▲'
+                    : '▼'}
+              </button>
+            )}
+          </th>
+        ))}
       </tr>
     </thead>
   );
@@ -103,11 +104,7 @@ function TableBody<Data extends Array<TableData>>({
   columns,
   attributes = {},
   data,
-  loading,
 }: TableProps<Data, TableColumns<Data[number]>>) {
-  if (loading) return 'loading...';
-  if (data.length === 0) return 'Empty';
-
   const Row = ({ children }: PropsWithChildren) => (
     <td {...defaultAttributes.td} {...attributes.td}>
       {children}
@@ -118,15 +115,21 @@ function TableBody<Data extends Array<TableData>>({
     <tbody {...attributes.tbody} {...defaultAttributes.tbody}>
       {data.map((x) => (
         <tr key={x.id} {...defaultAttributes.tr} {...attributes.tr}>
+          {/* main columns */}
           {Object.entries(x).map(([key, val]) => {
             const col = columns[key as keyof typeof columns];
+
             if (!col) return null;
+
             if ('renderCell' in col) {
               return <Row key={key}>{col.renderCell?.(val)}</Row>;
             }
 
             return <Row key={key}>{val.toString()}</Row>;
           })}
+
+          {/* actions */}
+          {columns.actions && <Row>{columns.actions.renderCell(x)}</Row>}
         </tr>
       ))}
     </tbody>

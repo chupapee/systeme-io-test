@@ -16,7 +16,7 @@ export function useTableSorter<Data extends Array<TableData>>(data: Data) {
     data,
   });
 
-  const sortFx = (column: string, sorter?: TableColumnSorter) => {
+  const sortFx = (column: string, sorter?: TableColumnSorter<Data[number]>) => {
     const isAsc = sortState.direction === 'asc';
 
     const sortedData = data.sort((a, b) => {
@@ -76,6 +76,10 @@ export function useTableFilter<Data extends Array<TableData>>({
 
     setLocalData(res as Data);
   }, [debouncedVal]);
+
+  useEffect(() => {
+    setLocalData(data);
+  }, [data]);
 
   return { filterVal, onFilter, filteredData: localData };
 }

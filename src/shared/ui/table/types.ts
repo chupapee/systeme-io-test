@@ -8,16 +8,18 @@ export interface TableData {
 export type TableColumnSorter<Value = unknown> = (a: Value, b: Value) => number;
 export type TableColumnFilter<Value = unknown> = (x: Value) => boolean;
 
-export interface TableColumnOptions<Value = unknown> {
+export interface TableColumnOptions<Value = unknown | TableData> {
   headerName: string | React.ReactNode;
-  renderCell?: (value: Value) => React.ReactNode;
+  renderCell?: (col: Value) => React.ReactNode;
 
   sorter?: TableColumnSorter<Value>;
   sortable?: boolean;
 }
 
 export type TableColumns<Col extends TableData> = {
-  [K in keyof Col]?: TableColumnOptions<Col[K]>;
+  [K in keyof Col | 'actions']?: K extends 'actions'
+    ? Required<Pick<TableColumnOptions<Col>, 'headerName' | 'renderCell'>>
+    : TableColumnOptions<Col[K]>;
 };
 
 export type TableAttributes = Partial<{
